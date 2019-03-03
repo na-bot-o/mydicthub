@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"io"
+	"log"
 	"net/http"
+	"text/template"
 )
 
 type Controller struct{}
@@ -17,5 +19,10 @@ func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	io.WriteString(w, "this is login page")
+	t := template.Must(template.ParseFiles("templates/login.html"))
+	err := t.ExecuteTemplate(w, "login.html", nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
