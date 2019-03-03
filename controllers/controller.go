@@ -7,6 +7,6 @@ import (
 
 type Controller struct{}
 
-func (c *Controller) Index(w http.ResponseWriter, r *http.Request) {
+func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "test")
 }

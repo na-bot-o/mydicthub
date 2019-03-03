@@ -14,7 +14,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", controller.Index)
+	router.HandleFunc("/", controller.IndexHandler).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8081", router))
 }
