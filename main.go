@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/na-bot-o/rest/controllers"
+	controllers "github.com/na-bot-o/mydicthub/controllers"
 )
 
 func main() {
@@ -14,7 +14,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", controller.index()).Method("GET")
+	router.HandleFunc("/", controller.Index)
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8081", router))
 }
