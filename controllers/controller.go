@@ -10,7 +10,7 @@ import (
 type Controller struct{}
 
 func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("session")
+	_, err := r.Cookie("auth")
 
 	if err != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
