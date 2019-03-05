@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"strings"
 	"text/template"
+
+	"github.com/markbates/goth/gothic"
 )
 
 type Controller struct{}
@@ -36,4 +38,21 @@ func (c *Controller) AuthHandler(w http.ResponseWriter, r *http.Request) {
 	case "login":
 
 	}
+}
+
+func (c *Controller) CallbackHandler(w http.ResponseWriter, r *http.Request) {
+	user, err := gothic.CompleteUserAuth(w, r)
+	if err != nil {
+		log.Errorf(err)
+		return
+	}
+	http.SetCookie(w, &http.Cookie{
+		Name: "Auth",
+		Value: user.Name,
+		Path: "/"
+	})
+
+	w.Header()["location"] = []string{"/"}
+	w.WriteHeader(http.StatusTemporaryRedirect)
+
 }

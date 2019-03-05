@@ -8,8 +8,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
-	"github.com/markbates/goth/providers/twitter"
+  "github.com/markbates/goth/providers/twitter"
 	"github.com/na-bot-o/mydicthub/controllers"
+
 )
 
 func init() {
@@ -34,6 +35,8 @@ func main() {
 
 	router.HandleFunc("/", controller.IndexHandler).Methods("GET")
 	router.HandleFunc("/login", controller.LoginHandler).Methods("GET")
+	router.HandleFunc("/auth/{provider}",gothic.BeginAuthHandler)
+	router.HandleFunc("/auth/{provider}/callback",controller.CallbackHandler)
 	router.HandleFunc("/auth/", controller.AuthHandler)
 
 	log.Fatal(http.ListenAndServe(":8085", router))
