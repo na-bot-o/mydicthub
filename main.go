@@ -33,11 +33,10 @@ func main() {
 
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 
-	router.HandleFunc("/", controller.IndexHandler).Methods("GET")
+	router.HandleFunc("/", MustAuth(controller.IndexHandler)).Methods("GET")
 	router.HandleFunc("/login", controller.LoginHandler).Methods("GET")
 	router.HandleFunc("/auth/{provider}",gothic.BeginAuthHandler)
 	router.HandleFunc("/auth/{provider}/callback",controller.CallbackHandler)
-	router.HandleFunc("/auth/", controller.AuthHandler)
 
 	log.Fatal(http.ListenAndServe(":8085", router))
 }

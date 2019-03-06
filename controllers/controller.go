@@ -1,24 +1,30 @@
 package controllers
 
 import (
-	"io"
 	"log"
 	"net/http"
-	"strings"
 	"text/template"
 
 	"github.com/markbates/goth/gothic"
+	"github.com/stretchr/objx"
 )
+
+type dictionary struct {
+	userid string
+	words  map[string]string
+}
 
 type Controller struct{}
 
 func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	_, err := r.Cookie("auth")
+	cookie, err := r.Cookie("auth")
+
+	t := template.Must(template.ParseFiles("templates/index.html"))
+	err := t.ExecuteTemplate(w, "index.html", nil)
 
 	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		log.Fatal(err)
 	}
-	io.WriteString(w, "test")
 }
 
 func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -30,13 +36,20 @@ func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (c *Controller) AuthHandler(w http.ResponseWriter, r *http.Request) {
-	segs := strings.Split(r.URL.Path, "/")
-	action := segs[2]
-	provider := segs[3]
-	switch action {
-	case "login":
+func MustAuth(handler http.Handler) http.Handler {
+	return &authHandler{next: handler}
+}
 
+type authHandler struct {
+	next http.Handler
+}
+
+func (h *authHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if cookie, err := r.Cookie("auth"); err == http.ErrNoCookie || cookie.Value == "" {
+		w.Header().Set("Location", "/login")
+		w.WriteHeader(http.StatusTemporaryRedirect)
+	} else {
+		h.next.ServeHTTP(w, r)
 	}
 }
 
@@ -46,10 +59,15 @@ func (c *Controller) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 		log.Errorf(err)
 		return
 	}
+	authCookieValue := objx.New(map[string]interface{}{
+		"name": user.Name,
+		"id":   user.UserID,
+	}).MustBase64()
+
 	http.SetCookie(w, &http.Cookie{
-		Name: "Auth",
-		Value: user.Name,
-		Path: "/"
+		Name:  "auth",
+		Value: authCookieValue,
+		Path:  "/",
 	})
 
 	w.Header()["location"] = []string{"/"}
