@@ -17,10 +17,14 @@ type dictionary struct {
 type Controller struct{}
 
 func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
-	cookie, err := r.Cookie("auth")
+
+	data := make(map[string]interface{})
+	authcookie, _ := r.Cookie("auth")
+
+	data["userdata"] = objx.MustFromBase64(authcookie.Value)
 
 	t := template.Must(template.ParseFiles("templates/index.html"))
-	err := t.ExecuteTemplate(w, "index.html", nil)
+	err := t.ExecuteTemplate(w, "index.html", data)
 
 	if err != nil {
 		log.Fatal(err)
