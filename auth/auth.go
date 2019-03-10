@@ -25,5 +25,3 @@ func (a *Auth) MustAuth(handler http.HandlerFunc) http.HandlerFunc {
 		}
 	}
 }
-
-// func (a *Auth)

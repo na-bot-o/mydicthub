@@ -9,6 +9,11 @@
   <body>
     <p>{{.userdata.name}}</p>
     <p>{{.userdata.id}}</p>
+
+    <form action="/logout" method="POST">
+      <input class="btn btn-danger"type="submit" value="ログアウト"/>
+    </form>
+    
   </body>
 
 </html>
