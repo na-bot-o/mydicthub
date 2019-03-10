@@ -7,6 +7,7 @@ import (
 	"text/template"
 
 	"github.com/markbates/goth/gothic"
+	"github.com/na-bot-o/mydicthub/util"
 	"github.com/stretchr/objx"
 )
 
@@ -39,6 +40,21 @@ func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+}
+
+func (c *Controller) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+	if util.IsCookie(r, "auth") {
+		cookie := &http.Cookie{
+			Name:   "auth",
+			Value:  "",
+			MaxAge: -1,
+		}
+		http.SetCookie(w, cookie)
+	}
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
+	// w.Header()["location"] = []string{"/login"}
+	// w.WriteHeader(http.StatusTemporaryRedirect)
 
 }
 
