@@ -42,6 +42,12 @@ func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// func (c *Controller) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+// 	authCookie, err := r.Cookie("auth")
+// 	if
+
+// }
+
 func (c *Controller) CallbackHandler(w http.ResponseWriter, r *http.Request) {
 	user, err := gothic.CompleteUserAuth(w, r)
 	if err != nil {

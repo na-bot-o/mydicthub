@@ -39,6 +39,7 @@ func main() {
 	router.HandleFunc("/login", controller.LoginHandler).Methods("GET")
 	router.HandleFunc("/auth/{provider}/login", gothic.BeginAuthHandler)
 	router.HandleFunc("/auth/{provider}/callback", controller.CallbackHandler)
+	// router.HandleFunc("/logout", controller.LogoutHandler).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8085", router))
 }
