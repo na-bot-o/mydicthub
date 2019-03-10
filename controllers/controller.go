@@ -20,21 +20,16 @@ type Controller struct{}
 func (c *Controller) IndexHandler(w http.ResponseWriter, r *http.Request) {
 
 	data := make(map[string]interface{})
-	authcookie, err := r.Cookie("auth")
-	fmt.Println(err)
-	if err == http.ErrNoCookie || authcookie.Value == "" {
-		w.Header().Set("Location", "/login")
-		w.WriteHeader(http.StatusTemporaryRedirect)
-	} else {
-		data["userdata"] = objx.MustFromBase64(authcookie.Value)
-		fmt.Println(data)
+	authcookie, _ := r.Cookie("auth")
 
-		t := template.Must(template.ParseFiles("templates/index.html"))
-		err = t.ExecuteTemplate(w, "index.html", data)
+	data["userdata"] = objx.MustFromBase64(authcookie.Value)
+	fmt.Println(data)
 
-		if err != nil {
-			log.Fatal(err)
-		}
+	t := template.Must(template.ParseFiles("templates/index.html"))
+	err := t.ExecuteTemplate(w, "index.html", data)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -45,23 +40,6 @@ func (c *Controller) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-}
-
-func (c *Controller) MustAuth(handler http.Handler) http.Handler {
-	return &AuthHandler{next: handler}
-}
-
-type AuthHandler struct {
-	next http.Handler
-}
-
-func (h *AuthHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if cookie, err := r.Cookie("auth"); err == http.ErrNoCookie || cookie.Value == "" {
-		w.Header().Set("Location", "/login")
-		w.WriteHeader(http.StatusTemporaryRedirect)
-	} else {
-		h.next.ServeHTTP(w, r)
-	}
 }
 
 func (c *Controller) CallbackHandler(w http.ResponseWriter, r *http.Request) {
